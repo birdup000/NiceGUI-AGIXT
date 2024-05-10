@@ -1,5 +1,6 @@
 # AGiXT NiceGUI
-
+This is a UI for *[AGIXT](https://github.com/Josh-XT/AGiXT)* 
+<br>
 AGiXT is a user interface (UI) tool designed to interact with the AGiXT platform. This UI provides a convenient way to select agents, customize prompts, and manage various aspects of the interaction process.
 
 ## Usage
