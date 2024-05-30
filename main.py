@@ -139,42 +139,37 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
 
 def prompt_selection(prompt: dict = {}, step_number: int = 0):
     prompt_categories = ApiClient.get_prompt_categories()
-    prompt_category = ui.selectbox(
-        "Select Prompt Category",
+    prompt_category = ui.select(
         prompt_categories,
-        index=prompt_categories.index("Default"),
-        key=f"step_{step_number}prompt_category",
+        label="Select Prompt Category",
+        value=prompt.get("prompt_category", "Default"),
+        key=f"step_{step_number}_prompt_category",
     )
-    available_prompts = ApiClient.get_prompts(prompt_category=prompt_category)
+    available_prompts = ApiClient.get_prompts(prompt_category=prompt_category.value)
     try:
         custom_input_index = available_prompts.index("Custom Input")
-    except:
+    except ValueError:
         custom_input_index = 0
-    prompt_name = ui.selectbox(
-        "Select Custom Prompt",
+    prompt_name = ui.select(
         available_prompts,
-        index=available_prompts.index(prompt.get("prompt_name", ""))
-        if "prompt_name" in prompt
-        else custom_input_index,
-        key=f"step{step_number}_prompt_name",
+        label="Select Custom Prompt",
+        value=prompt.get("prompt_name", ""),
+        key=f"step_{step_number}_prompt_name",
     )
     prompt_content = ApiClient.get_prompt(
-        prompt_name=prompt_name, prompt_category=prompt_category
+        prompt_name=prompt_name.value, prompt_category=prompt_category.value
     )
-    ui.markdown(
-        f"""
-        Prompt Content
-        """
-    )
+    ui.markdown("**Prompt Content**")
+    ui.markdown(prompt_content)
     prompt_args_values = prompt_options(prompt=prompt, step_number=step_number)
-    if prompt_name:
+    if prompt_name.value:
         prompt_args = ApiClient.get_prompt_args(
-            prompt_name=prompt_name, prompt_category=prompt_category
+            prompt_name=prompt_name.value, prompt_category=prompt_category.value
         )
         args = build_args(args=prompt_args, prompt=prompt, step_number=step_number)
         new_prompt = {
-            "prompt_name": prompt_name,
-            "prompt_category": prompt_category,
+            "prompt_name": prompt_name.value,
+            "prompt_category": prompt_category.value,
             **args,
             **prompt_args_values,
         }
@@ -215,43 +210,47 @@ def run_chain(agent_name: str, chain_name: str, user_input: str):
         ui.notify(f"Error: {str(e)}", color="negative")
         return None
 
-with ui.header().classes(replace='row items-center bg-gray-800 text-white') as header:
-    ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white')
+with ui.header().classes(replace='row items-center justify-between bg-blue-900 text-white p-4') as header:
+    ui.label('AGIXT').classes('text-2xl font-bold')
+    ui.button(on_click=lambda: left_drawer.toggle()).props('flat color=white')
 
-with ui.tabs().classes('bg-gray-800 text-white') as tabs:
+with ui.tabs().classes('bg-gray-200 text-black') as tabs:
     ui.tab('Interact')
     ui.tab('Agents')
     ui.tab('Chains')
     ui.tab('Prompts')
 
-with ui.footer(value=False).classes('bg-gray-900 text-white') as footer:
+with ui.footer().classes('bg-gray-900 text-white p-4') as footer:
     ui.label('Footer')
 
-with ui.left_drawer().classes('bg-blue-900 text-white') as left_drawer:
-    ui.label('AGIXT')
-    ui.button(on_click=lambda: left_drawer.toggle(), icon='home').props('flat color=blue')
+with ui.left_drawer().classes('bg-blue-800 text-white p-4') as left_drawer:
+    ui.label('Navigation').classes('text-xl font-bold mb-4')
+    ui.link('Home').on('click', left_drawer.toggle).classes('block py-2 text-white hover:text-blue-200')
 
-with ui.tab_panels(tabs, value='Interact').classes('w-full text-black'):
+def update_interaction_mode():
+    chat_container.visible = (mode_select.value == 'Chat')
+    chain_container.visible = (mode_select.value == 'Chain')
+
+with ui.tab_panels(tabs, value='Interact').classes('w-full h-full'):
     with ui.tab_panel('Interact'):
         ui.label('Select an agent:')
         select1 = agent_selection()
 
         mode_select = ui.select(['Chat', 'Chain'], label='Interaction Mode', on_change=lambda e: update_interaction_mode())
+        
+        # Containers are hidden by default
+        chat_container = ui.column().classes('w-full h-full').props('visible=False')
+        with chat_container:
+            input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None)
+            ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default"))
 
-        with ui.column().classes('w-full'):
-            with ui.card().tight() as card:
-                chat_container = ui.column().classes('w-full').props('visible=False')
-                with chat_container:
-                    input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None)
-                    ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default"))
-
-                chain_container = ui.column().classes('w-full').props('visible=False')
-                with chain_container:
-                    ui.label('Select a chain:')
-                    chains = ApiClient.get_chains()
-                    select2 = ui.select(chains)
-                    input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None)
-                    ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value))
+        chain_container = ui.column().classes('w-full h-full').props('visible=False')
+        with chain_container:
+            ui.label('Select a chain:')
+            chains = ApiClient.get_chains()
+            select2 = ui.select(chains)
+            input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None)
+            ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value))
 
     with ui.tab_panel('Agents'):
         ui.label('Content of Agents')
@@ -259,9 +258,5 @@ with ui.tab_panels(tabs, value='Interact').classes('w-full text-black'):
         ui.label('Content of Chains')
     with ui.tab_panel('Prompts'):
         ui.label('Content of Prompts')
-
-def update_interaction_mode():
-    chat_container.props('visible', mode_select.value == 'Chat')
-    chain_container.props('visible', mode_select.value == 'Chain')
 
 ui.run()
