@@ -217,6 +217,7 @@ def run_chain(agent_name: str, chain_name: str, user_input: str):
 
 with ui.header().classes(replace='row items-center bg-gray-800 text-white') as header:
     ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white')
+
 with ui.tabs().classes('bg-gray-800 text-white') as tabs:
     ui.tab('Interact')
     ui.tab('Agents')
@@ -230,22 +231,37 @@ with ui.left_drawer().classes('bg-blue-900 text-white') as left_drawer:
     ui.label('AGIXT')
     ui.button(on_click=lambda: left_drawer.toggle(), icon='home').props('flat color=blue')
 
-with ui.tab_panels(tabs, value='interact').classes('w-full text-black'):
+with ui.tab_panels(tabs, value='Interact').classes('w-full text-black'):
     with ui.tab_panel('Interact'):
         ui.label('Select an agent:')
         select1 = agent_selection()
-        input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None)
-        ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default"))
-        ui.label('Select a chain:')
-        chains = ApiClient.get_chains()
-        select2 = ui.select(chains)
-        input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None)
-        ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value))
+
+        mode_select = ui.select(['Chat', 'Chain'], label='Interaction Mode', on_change=lambda e: update_interaction_mode())
+
+        with ui.column().classes('w-full'):
+            with ui.card().tight() as card:
+                chat_container = ui.column().classes('w-full').props('visible=False')
+                with chat_container:
+                    input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None)
+                    ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default"))
+
+                chain_container = ui.column().classes('w-full').props('visible=False')
+                with chain_container:
+                    ui.label('Select a chain:')
+                    chains = ApiClient.get_chains()
+                    select2 = ui.select(chains)
+                    input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None)
+                    ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value))
+
     with ui.tab_panel('Agents'):
         ui.label('Content of Agents')
     with ui.tab_panel('Chains'):
         ui.label('Content of Chains')
     with ui.tab_panel('Prompts'):
         ui.label('Content of Prompts')
+
+def update_interaction_mode():
+    chat_container.props('visible', mode_select.value == 'Chat')
+    chain_container.props('visible', mode_select.value == 'Chain')
 
 ui.run()
