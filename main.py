@@ -19,9 +19,7 @@ def agent_selection(key: str = "select_learning_agent", heading: str = "", curre
 
     # If the previously selected agent is in the list, use it as the default
     if previously_selected_agent in agent_names:
-        default_index = (
-            agent_names.index(previously_selected_agent) + 1
-        )  # add 1 for the empty string at index 0
+        default_index = agent_names.index(previously_selected_agent) + 1  # add 1 for the empty string at index 0
     else:
         default_index = 0
 
@@ -66,9 +64,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         conversation_results = ui.number_input(
             "How many conversation results to inject (Default is 5)",
             min_value=1,
-            value=5
-            if "conversation_results" not in prompt
-            else int(prompt["conversation_results"]),
+            value=5 if "conversation_results" not in prompt else int(prompt["conversation_results"]),
             key=f"conversation_results_{step_number}",
         )
         shots = ui.number_input(
@@ -81,17 +77,13 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
         inject_memories_from_collection_number = ui.number_input(
             "Inject memories from collection number (Default is 0)",
             min_value=0,
-            value=0
-            if "inject_memories_from_collection_number" not in prompt
-            else int(prompt["inject_memories_from_collection_number"]),
+            value=0 if "inject_memories_from_collection_number" not in prompt else int(prompt["inject_memories_from_collection_number"]),
             key=f"inject_memories_from_collection_number_{step_number}",
         )
         context_results = ui.number_input(
             "How many long term memories to inject (Default is 5)",
             min_value=1,
-            value=5
-            if "context_results" not in prompt
-            else int(prompt["context_results"]),
+            value=5 if "context_results" not in prompt else int(prompt["context_results"]),
             key=f"context_results_{step_number}",
         )
         browse_links = ui.checkbox(
@@ -108,9 +100,7 @@ def prompt_options(prompt: dict = {}, step_number: int = 0):
             websearch_depth = ui.number_input(
                 "Websearch depth",
                 min_value=1,
-                value=3
-                if "websearch_depth" not in prompt
-                else int(prompt["websearch_depth"]),
+                value=3 if "websearch_depth" not in prompt else int(prompt["websearch_depth"]),
                 key=f"websearch_depth_{step_number}",
             )
         else:
@@ -153,7 +143,7 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
         "Select Prompt Category",
         prompt_categories,
         index=prompt_categories.index("Default"),
-        key=f"step_{step_number}_prompt_category",
+        key=f"step_{step_number}prompt_category",
     )
     available_prompts = ApiClient.get_prompts(prompt_category=prompt_category)
     try:
@@ -166,14 +156,14 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
         index=available_prompts.index(prompt.get("prompt_name", ""))
         if "prompt_name" in prompt
         else custom_input_index,
-        key=f"step_{step_number}_prompt_name",
+        key=f"step{step_number}_prompt_name",
     )
     prompt_content = ApiClient.get_prompt(
         prompt_name=prompt_name, prompt_category=prompt_category
     )
     ui.markdown(
         f"""
-**Prompt Content**
+        Prompt Content
         """
     )
     prompt_args_values = prompt_options(prompt=prompt, step_number=step_number)
@@ -191,19 +181,47 @@ def prompt_selection(prompt: dict = {}, step_number: int = 0):
         return new_prompt
 
 def build_args(args: dict, prompt: dict, step_number: int):
-    pass  # This function needs to be implemented based on your specific requirements.
+    # Implement this function based on your specific requirements
+    pass
 
 def predefined_memory_collections():
-    pass  # Implement this function if necessary.
+    # Implement this function if necessary
+    pass
 
+def chat(agent_name: str, user_input: str, conversation: str):
+    try:
+        response = ApiClient.chat(
+            agent_name=agent_name,
+            user_input=user_input,
+            conversation=conversation
+        )
+        return response
+    except Exception as e:
+        ui.notify(f"Error: {str(e)}", color="negative")
+        return None
 
-with ui.header().classes(replace='row items-center bg-gray-900 text-white') as header:
+def run_chain(agent_name: str, chain_name: str, user_input: str):
+    try:
+        response = ApiClient.run_chain(
+            chain_name=chain_name,
+            user_input=user_input,
+            agent_name=agent_name,
+            all_responses=False,
+            from_step=1,
+            chain_args={}
+        )
+        return response
+    except Exception as e:
+        ui.notify(f"Error: {str(e)}", color="negative")
+        return None
+
+with ui.header().classes(replace='row items-center bg-gray-800 text-white') as header:
     ui.button(on_click=lambda: left_drawer.toggle(), icon='menu').props('flat color=white')
-    with ui.tabs().classes('bg-gray-900') as tabs:
-        ui.tab('Agents')
-        ui.tab('Instruct')
-        ui.tab('chains')
-        ui.tab('prompts')
+with ui.tabs().classes('bg-gray-800 text-white') as tabs:
+    ui.tab('Interact')
+    ui.tab('Agents')
+    ui.tab('Chains')
+    ui.tab('Prompts')
 
 with ui.footer(value=False).classes('bg-gray-900 text-white') as footer:
     ui.label('Footer')
@@ -212,15 +230,22 @@ with ui.left_drawer().classes('bg-blue-900 text-white') as left_drawer:
     ui.label('AGIXT')
     ui.button(on_click=lambda: left_drawer.toggle(), icon='home').props('flat color=blue')
 
-with ui.tab_panels(tabs, value='A').classes('w-full text-black'):
-    with ui.tab_panel('Agents'):
+with ui.tab_panels(tabs, value='interact').classes('w-full text-black'):
+    with ui.tab_panel('Interact'):
         ui.label('Select an agent:')
         select1 = agent_selection()
-    with ui.tab_panel('Instruct'):
-        ui.label('Content of B')
-    with ui.tab_panel('chains'):
-        ui.label('Content of C')
-    with ui.tab_panel('prompts'):
-        ui.label('Content of D')
+        input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None)
+        ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default"))
+        ui.label('Select a chain:')
+        chains = ApiClient.get_chains()
+        select2 = ui.select(chains)
+        input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None)
+        ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value))
+    with ui.tab_panel('Agents'):
+        ui.label('Content of Agents')
+    with ui.tab_panel('Chains'):
+        ui.label('Content of Chains')
+    with ui.tab_panel('Prompts'):
+        ui.label('Content of Prompts')
 
 ui.run()
