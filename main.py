@@ -238,11 +238,12 @@ with ui.tab_panels(tabs, value='Interact').classes('p-12'):
     with ui.tab_panel('Interact'):
         ui.label('Select an agent:').classes('text-3xl font-bold mb-8')
         select1 = agent_selection()
-
-        mode_select = ui.select(['Chat', 'Chain'], label='Interaction Mode', on_change=lambda e: update_interaction_mode()).classes('mb-8 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800')
+        ui.label('Select an interaction mode:').classes('text-3xl font-bold mb-8')
+        mode_select = ui.select(['Chat', 'Chain'], on_change=lambda e: update_interaction_mode()).classes('mb-8 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800')
 
         chat_container = ui.column().classes('mt-8 p-8 bg-white rounded-lg shadow-lg transition duration-500 ease-in-out transform hover:-translate-y-2 hover:scale-105').props('visible=False')
         with chat_container:
+            ui.label('chat with the agent:').classes('text-3xl font-bold mb-8')
             input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None).classes('mb-6 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800')
             ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default")).classes('bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-8 rounded-md transition duration-300')
 
@@ -259,12 +260,13 @@ with ui.tab_panels(tabs, value='Interact').classes('p-12'):
         # Add content for Agents tab
 
     with ui.tab_panel('Chains'):
-        ui.label('Content of Chains').classes('text-3xl font-bold mb-8')
+        ui.label('Content of Chains').classes('text-3xl font-bold mb-8') 
         # Add content for Chains tab
 
     with ui.tab_panel('Prompts'):
         ui.label('Content of Prompts').classes('text-3xl font-bold mb-8')
         # Add content for Prompts tab
+
 
 
 ui.run()
