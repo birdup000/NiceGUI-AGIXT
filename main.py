@@ -212,16 +212,27 @@ def run_chain(agent_name: str, chain_name: str, user_input: str):
 
 with ui.header().classes('bg-gradient-to-r from-blue-800 to-indigo-800 text-white p-8 shadow-lg flex justify-between items-center') as header:
     ui.label('AGIXT').classes('text-4xl font-bold tracking-wider')
-    ui.button(on_click=lambda: left_drawer.toggle()).props('flat color=white icon=menu').classes('focus:outline-none hover:bg-blue-700 transition duration-200 ease-in-out')
+    ui.input(placeholder='Search...', on_change=lambda e: search_function(e.value)).classes('bg-white text-black rounded-md p-2')
+    with ui.row().classes('flex items-center space-x-4'):
+        ui.button(on_click=lambda: left_drawer.toggle()).props('flat color=white icon=menu').classes('focus:outline-none hover:bg-blue-700 transition duration-200 ease-in-out')
+        ui.image('user-avatar.png').classes('h-10 w-10 rounded-full').on('click', lambda: user_menu.toggle())
+    with ui.menu().classes('bg-white text-black rounded-md shadow-lg') as user_menu:
+        ui.menu_item('Profile').on('click', lambda: open_profile())
+        ui.menu_item('Settings').on('click', lambda: open_settings())
+        ui.menu_item('Logout').on('click', lambda: logout())
 
 with ui.tabs().classes('bg-white shadow-xl rounded-lg overflow-hidden') as tabs:
-    ui.tab('Interact').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
-    ui.tab('Agents').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
-    ui.tab('Chains').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
-    ui.tab('Prompts').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
+    ui.tab('Interact', icon='chat').classes('flex items-center text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
+    ui.tab('Agents', icon='people').classes('flex items-center text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
+    ui.tab('Chains', icon='link').classes('flex items-center text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
+    ui.tab('Prompts', icon='description').classes('flex items-center text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
 
-with ui.footer().classes('bg-gray-900 text-white p-8 flex justify-center') as footer:
+with ui.footer().classes('bg-gray-900 text-white p-8 flex justify-between items-center'):
     ui.label('© 2024 AGIXT. All rights reserved.').classes('text-lg')
+    with ui.row().classes('flex space-x-4'):
+        ui.link().classes('text-white hover:text-blue-300').props('icon=facebook').on('click', lambda: open_social('facebook'))
+        ui.link().classes('text-white hover:text-blue-300').props('icon=twitter').on('click', lambda: open_social('twitter'))
+        ui.link().classes('text-white hover:text-blue-300').props('icon=linkedin').on('click', lambda: open_social('linkedin'))
 
 with ui.left_drawer().classes('bg-gray-900 text-white p-12 w-80 transform transition-transform duration-300 ease-in-out translate-x-0') as left_drawer:
     ui.label('Navigation').classes('text-4xl font-bold mb-12')
@@ -262,11 +273,30 @@ with ui.tab_panels(tabs, value='Interact').classes('p-12'):
 
     with ui.tab_panel('Chains'):
         ui.label('Manage Your Chains').classes('text-3xl font-bold mb-8') 
-        # Add more detailed content and interactive elements for Chains tab
 
     with ui.tab_panel('Prompts'):
         ui.label('Manage Your Prompts').classes('text-3xl font-bold mb-8')
         # Add more detailed content and interactive elements for Prompts tab
+
+def search_function(value):
+    # Implement this function based on your specific requirements
+    pass
+
+def open_profile():
+    # Implement this function based on your specific requirements
+    pass
+
+def open_settings():
+    # Implement this function based on your specific requirements
+    pass
+
+def logout():
+    # Implement this function based on your specific requirements
+    pass
+
+def open_social(platform):
+    # Implement this function based on your specific requirements
+    pass
 
 
 
