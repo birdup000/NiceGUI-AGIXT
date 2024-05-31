@@ -210,23 +210,23 @@ def run_chain(agent_name: str, chain_name: str, user_input: str):
         ui.notify(f"Error: {str(e)}", color="negative")
         return None
 
-with ui.header().classes('bg-blue-800 text-white p-8 shadow-lg flex justify-between items-center') as header:
+with ui.header().classes('bg-gradient-to-r from-blue-800 to-indigo-800 text-white p-8 shadow-lg flex justify-between items-center') as header:
     ui.label('AGIXT').classes('text-4xl font-bold tracking-wider')
-    ui.button(on_click=lambda: left_drawer.toggle()).props('flat color=white icon=menu').classes('focus:outline-none hover:bg-blue-700 transition duration-200')
+    ui.button(on_click=lambda: left_drawer.toggle()).props('flat color=white icon=menu').classes('focus:outline-none hover:bg-blue-700 transition duration-200 ease-in-out')
 
-with ui.tabs().classes('bg-white shadow-lg rounded-lg overflow-hidden') as tabs:
-    ui.tab('Interact').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300')
-    ui.tab('Agents').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300')
-    ui.tab('Chains').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300')
-    ui.tab('Prompts').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300')
+with ui.tabs().classes('bg-white shadow-xl rounded-lg overflow-hidden') as tabs:
+    ui.tab('Interact').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
+    ui.tab('Agents').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
+    ui.tab('Chains').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
+    ui.tab('Prompts').classes('text-blue-800 hover:text-blue-900 font-semibold px-8 py-4 border-b-4 border-transparent hover:border-blue-800 transition duration-300 ease-in-out')
 
 with ui.footer().classes('bg-gray-900 text-white p-8 flex justify-center') as footer:
     ui.label('© 2024 AGIXT. All rights reserved.').classes('text-lg')
 
-with ui.left_drawer().classes('bg-gray-900 text-white p-12 w-96') as left_drawer:
+with ui.left_drawer().classes('bg-gray-900 text-white p-12 w-80 transform transition-transform duration-300 ease-in-out translate-x-0') as left_drawer:
     ui.label('Navigation').classes('text-4xl font-bold mb-12')
-    ui.link('Home').on('click', left_drawer.toggle).classes('block py-6 text-2xl text-white hover:text-blue-300 transition duration-300')
-    ui.link('Settings').on('click', left_drawer.toggle).classes('block py-6 text-2xl text-white hover:text-blue-300 transition duration-300')
+    ui.link('Home').on('click', left_drawer.toggle).classes('block py-6 text-2xl text-white hover:text-blue-300 transition duration-300 ease-in-out')
+    ui.link('Settings').on('click', left_drawer.toggle).classes('block py-6 text-2xl text-white hover:text-blue-300 transition duration-300 ease-in-out')
     ui.label('Powered by').classes('text-lg uppercase tracking-wide text-gray-400 mt-12 mb-4')
     ui.image('agixt-logo.png').classes('h-12')
 
@@ -237,35 +237,41 @@ def update_interaction_mode():
 with ui.tab_panels(tabs, value='Interact').classes('p-12'):
     with ui.tab_panel('Interact'):
         ui.label('Select an agent:').classes('text-3xl font-bold mb-8')
-        select1 = agent_selection()
+        select1 = agent_selection().classes('mb-8 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 transition duration-300 ease-in-out')
+        
         ui.label('Select an interaction mode:').classes('text-3xl font-bold mb-8')
-        mode_select = ui.select(['Chat', 'Chain'], on_change=lambda e: update_interaction_mode()).classes('mb-8 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800')
+        mode_select = ui.select(['Chat', 'Chain'], on_change=lambda e: update_interaction_mode()).classes('mb-8 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 transition duration-300 ease-in-out')
 
         chat_container = ui.column().classes('mt-8 p-8 bg-white rounded-lg shadow-lg transition duration-500 ease-in-out transform hover:-translate-y-2 hover:scale-105').props('visible=False')
         with chat_container:
-            ui.label('chat with the agent:').classes('text-3xl font-bold mb-8')
-            input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None).classes('mb-6 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800')
-            ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default")).classes('bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-8 rounded-md transition duration-300')
+            ui.label('Chat with the agent:').classes('text-3xl font-bold mb-8')
+            input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None).classes('mb-6 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 transition duration-300 ease-in-out')
+            ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default")).classes('bg-gradient-to-r from-blue-800 to-indigo-800 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-8 rounded-md transition duration-300 ease-in-out')
 
         chain_container = ui.column().classes('mt-8 p-8 bg-white rounded-lg shadow-lg transition duration-500 ease-in-out transform hover:-translate-y-2 hover:scale-105').props('visible=False')
         with chain_container:
             ui.label('Select a chain:').classes('text-3xl font-bold mb-8')
             chains = ApiClient.get_chains()
-            select2 = ui.select(chains).classes('mb-6 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800')
-            input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None).classes('mb-6 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800')
-            ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value)).classes('bg-blue-800 hover:bg-blue-900 text-white font-bold py-3 px-8 rounded-md transition duration-300')
+            select2 = ui.select(chains).classes('mb-6 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 transition duration-300 ease-in-out')
+            input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None).classes('mb-6 p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-800 transition duration-300 ease-in-out')
+            ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value)).classes('bg-gradient-to-r from-blue-800 to-indigo-800 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3 px-8 rounded-md transition duration-300 ease-in-out')
 
     with ui.tab_panel('Agents'):
-        ui.label('Content of Agents').classes('text-3xl font-bold mb-8')
-        # Add content for Agents tab
+        ui.label('Manage Your Agents').classes('text-3xl font-bold mb-8')
+        # Add more detailed content and interactive elements for Agents tab
 
     with ui.tab_panel('Chains'):
-        ui.label('Content of Chains').classes('text-3xl font-bold mb-8') 
-        # Add content for Chains tab
+        ui.label('Manage Your Chains').classes('text-3xl font-bold mb-8') 
+        # Add more detailed content and interactive elements for Chains tab
 
     with ui.tab_panel('Prompts'):
-        ui.label('Content of Prompts').classes('text-3xl font-bold mb-8')
-        # Add content for Prompts tab
+        ui.label('Manage Your Prompts').classes('text-3xl font-bold mb-8')
+        # Add more detailed content and interactive elements for Prompts tab
+
+
+
+
+
 
 
 
