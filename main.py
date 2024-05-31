@@ -210,53 +210,59 @@ def run_chain(agent_name: str, chain_name: str, user_input: str):
         ui.notify(f"Error: {str(e)}", color="negative")
         return None
 
-with ui.header().classes(replace='row items-center justify-between bg-blue-900 text-white p-4') as header:
-    ui.label('AGIXT').classes('text-2xl font-bold')
-    ui.button(on_click=lambda: left_drawer.toggle()).props('flat color=white')
+with ui.header().classes('bg-blue-600 text-white p-6 shadow-lg flex justify-between items-center') as header:
+    ui.label('AGIXT').classes('text-4xl font-bold tracking-wider')
+    ui.button(on_click=lambda: left_drawer.toggle()).props('flat color=white icon=menu').classes('focus:outline-none')
 
-with ui.tabs().classes('bg-gray-200 text-black') as tabs:
-    ui.tab('Interact')
-    ui.tab('Agents')
-    ui.tab('Chains')
-    ui.tab('Prompts')
+with ui.tabs().classes('bg-white shadow-lg rounded-lg overflow-hidden') as tabs:
+    ui.tab('Interact').classes('text-blue-600 hover:text-blue-700 font-semibold px-6 py-3 border-b-2 border-transparent hover:border-blue-600 transition duration-200')
+    ui.tab('Agents').classes('text-blue-600 hover:text-blue-700 font-semibold px-6 py-3 border-b-2 border-transparent hover:border-blue-600 transition duration-200')
+    ui.tab('Chains').classes('text-blue-600 hover:text-blue-700 font-semibold px-6 py-3 border-b-2 border-transparent hover:border-blue-600 transition duration-200')  
+    ui.tab('Prompts').classes('text-blue-600 hover:text-blue-700 font-semibold px-6 py-3 border-b-2 border-transparent hover:border-blue-600 transition duration-200')
 
-with ui.footer().classes('bg-gray-900 text-white p-4') as footer:
-    ui.label('Footer')
+with ui.footer().classes('bg-gray-900 text-white p-6 flex justify-center') as footer:  
+    ui.label('© 2024 AGIXT. All rights reserved.').classes('text-sm')
 
-with ui.left_drawer().classes('bg-blue-800 text-white p-4') as left_drawer:
-    ui.label('Navigation').classes('text-xl font-bold mb-4')
-    ui.link('Home').on('click', left_drawer.toggle).classes('block py-2 text-white hover:text-blue-200')
+with ui.left_drawer().classes('bg-gray-900 text-white p-8 w-80') as left_drawer:
+    ui.label('Navigation').classes('text-3xl font-bold mb-8') 
+    ui.link('Home').on('click', left_drawer.toggle).classes('block py-4 text-xl text-white hover:text-blue-200 transition duration-200')
+    ui.link('Settings').on('click', left_drawer.toggle).classes('block py-4 text-xl text-white hover:text-blue-200 transition duration-200')
+    ui.label('Powered by').classes('text-sm uppercase tracking-wide text-gray-500 mt-6 mb-2')
+    ui.image('agixt-logo.png').classes('h-8') 
 
 def update_interaction_mode():
     chat_container.visible = (mode_select.value == 'Chat')
     chain_container.visible = (mode_select.value == 'Chain')
 
-with ui.tab_panels(tabs, value='Interact').classes('w-full h-full'):
+with ui.tab_panels(tabs, value='Interact').classes('p-6'):
     with ui.tab_panel('Interact'):
-        ui.label('Select an agent:')
+        ui.label('Select an agent:').classes('text-2xl font-bold mb-4') 
         select1 = agent_selection()
 
-        mode_select = ui.select(['Chat', 'Chain'], label='Interaction Mode', on_change=lambda e: update_interaction_mode())
+        mode_select = ui.select(['Chat', 'Chain'], label='Interaction Mode', on_change=lambda e: update_interaction_mode()).classes('mb-6')
         
-        # Containers are hidden by default
-        chat_container = ui.column().classes('w-full h-full').props('visible=False')
+        chat_container = ui.column().classes('mt-6 p-6 bg-white rounded-lg shadow-md transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-105').props('visible=False') 
         with chat_container:
-            input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None)
-            ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default"))
+            input1 = ui.input(label='Message', placeholder='Type your message here...', on_change=lambda e: None).classes('mb-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500')
+            ui.button('Send', on_click=lambda: chat(select1.value, input1.value, "default")).classes('bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md transition duration-200') 
 
-        chain_container = ui.column().classes('w-full h-full').props('visible=False')
-        with chain_container:
-            ui.label('Select a chain:')
-            chains = ApiClient.get_chains()
-            select2 = ui.select(chains)
-            input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None)
-            ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value))
+        chain_container = ui.column().classes('mt-6 p-6 bg-white rounded-lg shadow-md transition duration-500 ease-in-out transform hover:-translate-y-1 hover:scale-105').props('visible=False')
+        with chain_container:  
+            ui.label('Select a chain:').classes('text-2xl font-bold mb-4')
+            chains = ApiClient.get_chains() 
+            select2 = ui.select(chains).classes('mb-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500')
+            input2 = ui.input(label='Chain Input', placeholder='Type your input here...', on_change=lambda e: None).classes('mb-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500')  
+            ui.button('Run Chain', on_click=lambda: run_chain(select1.value, select2.value, input2.value)).classes('bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-md transition duration-200')
 
     with ui.tab_panel('Agents'):
-        ui.label('Content of Agents')
-    with ui.tab_panel('Chains'):
-        ui.label('Content of Chains')
+        ui.label('Content of Agents').classes('text-2xl font-bold mb-4') 
+        # Add content for Agents tab
+    with ui.tab_panel('Chains'):  
+        ui.label('Content of Chains').classes('text-2xl font-bold mb-4')
+        # Add content for Chains tab  
     with ui.tab_panel('Prompts'):
-        ui.label('Content of Prompts')
+        ui.label('Content of Prompts').classes('text-2xl font-bold mb-4') 
+        # Add content for Prompts tab
+
 
 ui.run()
